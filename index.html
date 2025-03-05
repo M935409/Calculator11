@@ -141,9 +141,11 @@
                 let screen = document.getElementById("screen").value;
                 let formattedExpression = screen
                     .replace(/×/g, '*')
-                    .replace(/÷/g, '/');
+                    .replace(/÷/g, '/')
+                    .replace(/,/g, ''); // إزالة الفواصل عند الحساب
                 let result = new Function('return new BigNumber(' + formattedExpression + ')')();
-                document.getElementById("screen").value = result.toFixed(10).replace(/\.?0+$/, ""); 
+                let resultValue = result.toFixed(10).replace(/\.?0+$/, ""); 
+                document.getElementById("screen").value = addCommas(resultValue); // إضافة الفواصل عند عرض النتيجة
                 formatScreen();
             } catch {
                 document.getElementById("screen").value = "خطأ";
@@ -152,11 +154,16 @@
 
         function formatScreen() {
             let screen = document.getElementById("screen");
-            let value = screen.value.replace(/,/g, "");
+            let value = screen.value.replace(/,/g, ""); // إزالة الفواصل أثناء الكتابة
             if (/[\+\-\×\÷]/.test(value)) return;
             if (!isNaN(value) && value !== "") {
-                screen.value = Number(value).toLocaleString("en");
+                screen.value = addCommas(value); // إضافة الفواصل عند الكتابة
             }
+        }
+
+        function addCommas(value) {
+            // إضافة الفواصل للآلاف
+            return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     </script>
 </body>
